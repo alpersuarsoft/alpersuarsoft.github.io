@@ -1,72 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API to XML</title>
-    <style>
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ddd;
-            white-space: pre-wrap; /* Satır sonlarında taşma olmaması için */
-        }
-        .error {
-            color: red;
-        }
-    </style>
-</head>
-<body>
-    <pre id="xmlOutput">Loading...</pre>
-
+    <title>API İsteği</title>
     <script>
-        window.onload = function() {
-            fetch('https://acikveri.balikesir.bel.tr/api/v1/WebApi/sicaklik-ruzgar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const xml = jsonToXml(data);
-                document.getElementById('xmlOutput').textContent = xml;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('xmlOutput').classList.add('error');
-                document.getElementById('xmlOutput').textContent = 'An error occurred while fetching data. ' + error.message;
-            });
-        };
+        document.addEventListener('DOMContentLoaded', async function() {
+            const url = "https://acikveri.balikesir.bel.tr/api/v1/WebApi/sicaklik-ruzgar";
 
-        function jsonToXml(json) {
-            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<data>\n';
-
-            if (Array.isArray(json)) {
-                json.forEach(item => {
-                    xml += '  <item>\n';
-                    for (const key in item) {
-                        xml += `    <${key}>${item[key]}</${key}>\n`;
-                    }
-                    xml += '  </item>\n';
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/xml'
+                    },
+                    body: JSON.stringify({})
                 });
-            } else {
-                xml += '  <item>\n';
-                for (const key in json) {
-                    xml += `    <${key}>${json[key]}</${key}>\n`;
-                }
-                xml += '  </item>\n';
-            }
 
-            xml += '</data>';
-            return xml;
+                if (response.ok) {
+                    const xmlResponse = await response.text();
+                    displayXmlResponse(xmlResponse);
+                } else {
+                    console.error('İstek başarısız oldu:', response.status);
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+            }
+        });
+
+        function displayXmlResponse(xml) {
+            const pre = document.createElement('pre');
+            pre.textContent = xml;
+            document.getElementById('response').appendChild(pre);
         }
     </script>
+</head>
+<body>
+    <h1>API İsteği Sonucu</h1>
+    <div id="response"></div>
 </body>
 </html>
