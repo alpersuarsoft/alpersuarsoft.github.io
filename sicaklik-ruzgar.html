@@ -11,6 +11,9 @@
             border: 1px solid #ddd;
             white-space: pre-wrap; /* Satır sonlarında taşma olmaması için */
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -25,14 +28,20 @@
                 },
                 body: JSON.stringify({})
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 const xml = jsonToXml(data);
                 document.getElementById('xmlOutput').textContent = xml;
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('xmlOutput').textContent = 'An error occurred while fetching data.';
+                document.getElementById('xmlOutput').classList.add('error');
+                document.getElementById('xmlOutput').textContent = 'An error occurred while fetching data. ' + error.message;
             });
         };
 
