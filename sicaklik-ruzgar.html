@@ -6,7 +6,7 @@
     <title>API İsteği</title>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            const url = "https://acikveri.balikesir.bel.tr/api/v1/WebApi/sicaklik-ruzgar";
+            const url = "https://acikveri.balikesir.bel.tr/api/v1/WebApi/cevre-ilac";
 
             try {
                 const response = await fetch(url, {
@@ -15,7 +15,8 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/xml'
                     },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({
+                    })
                 });
 
                 if (response.ok) {
