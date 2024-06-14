@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API to XML</title>
+    <title>Sıcaklık ve Rüzgar</title>
     <style>
         pre {
             background-color: #f4f4f4;
@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <pre id="xmlOutput"></pre>
+    <pre id="xmlOutput">Loading...</pre>
 
     <script>
         window.onload = function() {
@@ -22,26 +22,38 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({})
             })
             .then(response => response.json())
             .then(data => {
                 const xml = jsonToXml(data);
                 document.getElementById('xmlOutput').textContent = xml;
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('xmlOutput').textContent = 'An error occurred while fetching data.';
+            });
         };
 
         function jsonToXml(json) {
             let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<data>\n';
 
-            json.forEach(item => {
+            if (Array.isArray(json)) {
+                json.forEach(item => {
+                    xml += '  <item>\n';
+                    for (const key in item) {
+                        xml += `    <${key}>${item[key]}</${key}>\n`;
+                    }
+                    xml += '  </item>\n';
+                });
+            } else {
                 xml += '  <item>\n';
-                for (const key in item) {
-                    xml += `    <${key}>${item[key]}</${key}>\n`;
+                for (const key in json) {
+                    xml += `    <${key}>${json[key]}</${key}>\n`;
                 }
                 xml += '  </item>\n';
-            });
+            }
 
             xml += '</data>';
             return xml;
